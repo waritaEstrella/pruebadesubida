@@ -46,3 +46,11 @@ export const updateTipoUsuario = async (correo, tipo_usuario) => {
     [tipo_usuario, correo]
   );
 };
+
+//funcion para obtener tipo de usuario
+export const getTipoUsuarioPorCorreo = async (correo) => {
+  const query = 'SELECT tipo_usuario FROM usuarios WHERE correo = $1';
+  const values = [correo];
+  const result = await pool.query(query, values);
+  return result.rows[0]; // devuelve { tipo_usuario: '...' }
+};
