@@ -1,43 +1,34 @@
-import { 
-  getUserByEmail, 
-  createUser, 
-  createGoogleUser, 
-  updateLastLogin, 
-  verifyEmail, 
-  resetPassword, 
-  linkGoogle as linkGoogleModel
+import {
+  getUserByEmail,
+  createUser,
+  updateLastLogin,
+  verifyEmail,
+  resetPassword,
 } from '../models/user.model.js';
 
 import { hashPassword, comparePassword } from '../utils/hashing.util.js';
 import { generateToken, verifyToken } from '../utils/jwt.util.js';
 import { sendVerificationEmail, sendResetPasswordEmail } from '../utils/mail.util.js';
-import { OAuth2Client } from 'google-auth-library';
 import dotenv from 'dotenv';
 dotenv.config();
 
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
 
-// --- NUEVO: Muestra el formulario web ---
+// --- Muestra formulario web para restablecer contraseña ---
 export const resetPasswordPage = (req, res) => {
   const { token } = req.query;
   if (!token) {
     return res.send(`
-      <html>
-        <body>
-          <h3>Token inválido o faltante.</h3>
-        </body>
-      </html>
+      <html><body><h3>Token inválido o faltante.</h3></body></html>
     `);
   }
   res.send(`
     <html>
-      <head>
-        <title>Restablecer Contraseña</title>
+      <head><title>Restablecer Contraseña</title>
         <style>
-          body { background: #FBE5D7; color: #6D5F73; font-family: Montserrat, Arial, sans-serif; text-align: center; padding-top: 60px; }
-          .card { background: #FFF; border-radius: 18px; display: inline-block; padding: 30px 60px; box-shadow: 0 4px 16px #E9DCE4; }
-          input[type="password"] { padding: 8px; border-radius: 8px; border: 1px solid #9A939A; width: 90%; margin-bottom: 18px; }
+          body { background: #FBE5D7; color: #6D5F73; font-family: Montserrat, Arial; text-align: center; padding-top: 60px; }
+          .card { background: #FFF; border-radius: 18px; padding: 30px 60px; box-shadow: 0 4px 16px #E9DCE4; display: inline-block; }
+          input[type="password"] { padding: 8px; border-radius: 8px; width: 90%; margin-bottom: 18px; border: 1px solid #9A939A; }
           button { background: #AC8C84; color: white; padding: 10px 25px; border: none; border-radius: 10px; font-size: 1.1rem; }
         </style>
       </head>
@@ -60,7 +51,7 @@ export const resetPasswordPage = (req, res) => {
   `);
 };
 
-// 1. Registro tradicional (envía email de verificación)
+// 1. Registro tradicional con email y contraseña
 export const register = async (req, res) => {
   try {
     const { nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento, tipo_usuario } = req.body;
@@ -68,15 +59,17 @@ export const register = async (req, res) => {
     if (existing) return res.status(409).json({ error: "Correo ya registrado" });
 
     const hashed = await hashPassword(contrasena);
-    const user = await createUser({ nombre, ap_pat, ap_mat, correo, contrasena: hashed, fecha_nacimiento, tipo_usuario });
+    const user = await createUser({
+      nombre, ap_pat, ap_mat, correo,
+      contrasena: hashed, fecha_nacimiento, tipo_usuario
+    });
 
-    // TOKEN para verificación
     const token = generateToken({ correo }, '1d');
     const webLink = `${BASE_URL}/api/auth/verify-email?token=${token}`;
     const appLink = `creciendocontigo://verify?token=${token}`;
     await sendVerificationEmail(correo, webLink, appLink);
 
-    res.status(201).json({ mensaje: "Usuario creado. Por favor revisa tu correo para verificar tu cuenta." });
+    res.status(201).json({ mensaje: "Usuario creado. Revisa tu correo para verificar tu cuenta." });
   } catch (err) {
     res.status(500).json({ error: "Error en el registro" });
   }
@@ -93,11 +86,10 @@ export const verifyEmailController = async (req, res) => {
 
     res.send(`
       <html>
-        <head>
-          <title>¡Correo verificado!</title>
+        <head><title>¡Correo verificado!</title>
           <style>
-            body { background: #FBE5D7; color: #6D5F73; font-family: Montserrat, Arial, sans-serif; text-align: center; padding-top: 60px; }
-            .card { background: #FFF; border-radius: 18px; display: inline-block; padding: 30px 60px; box-shadow: 0 4px 16px #E9DCE4; }
+            body { background: #FBE5D7; color: #6D5F73; font-family: Montserrat, Arial; text-align: center; padding-top: 60px; }
+            .card { background: #FFF; border-radius: 18px; padding: 30px 60px; box-shadow: 0 4px 16px #E9DCE4; display: inline-block; }
             h1 { font-size: 2.3rem; color: #AC8C84; }
             p { font-size: 1.1rem; }
           </style>
@@ -105,13 +97,11 @@ export const verifyEmailController = async (req, res) => {
         <body>
           <div class="card">
             <h1>¡Correo verificado correctamente!</h1>
-            <p>Ahora puedes iniciar sesión en <strong>Creciendo Contigo</strong>.<br><br>
-            Puedes cerrar esta ventana.</p>
+            <p>Ahora puedes iniciar sesión en <strong>Creciendo Contigo</strong>.</p>
           </div>
         </body>
       </html>
     `);
-
   } catch (err) {
     res.status(500).send("Error al verificar correo");
   }
@@ -136,7 +126,7 @@ export const login = async (req, res) => {
   }
 };
 
-// 4. Recuperar contraseña (envía email con link para deep link)
+// 4. Recuperar contraseña (envía link por correo)
 export const forgotPassword = async (req, res) => {
   try {
     const { correo } = req.body;
@@ -154,103 +144,35 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// 5. Procesa el POST para restablecer la contraseña (web y app)
+// 5. Procesa POST para restablecer contraseña (web y app)
 export const resetPasswordController = async (req, res) => {
   try {
     const { token, nueva_contrasena, confirmar_contrasena } = req.body;
 
-    // Si viene desde web (HTML form), también tendrá confirmar_contrasena
     if (typeof confirmar_contrasena !== 'undefined' && nueva_contrasena !== confirmar_contrasena) {
       return res.send(`
-        <html>
-          <body>
-            <p style="color:red;">Las contraseñas no coinciden. <a href="javascript:history.back()">Volver</a></p>
-          </body>
-        </html>
+        <html><body><p style="color:red;">Las contraseñas no coinciden. <a href="javascript:history.back()">Volver</a></p></body></html>
       `);
     }
 
     const data = verifyToken(token);
-    if (!data) {
-      return res.send("Token inválido o expirado.");
-    }
+    if (!data) return res.send("Token inválido o expirado.");
 
     const hashed = await hashPassword(nueva_contrasena);
     await resetPassword(data.correo, hashed);
 
-    // Si es un POST desde web
     if (typeof confirmar_contrasena !== 'undefined') {
       return res.send(`
-        <html>
-          <body>
-            <h3>¡Contraseña restablecida exitosamente!</h3>
-            <p>Ya puedes iniciar sesión con tu nueva contraseña.</p>
-          </body>
-        </html>
+        <html><body><h3>¡Contraseña restablecida exitosamente!</h3><p>Ya puedes iniciar sesión.</p></body></html>
       `);
     } else {
-      // Si es desde la app
       return res.json({ mensaje: "Contraseña restablecida con éxito." });
     }
   } catch (err) {
-    // Errores generales
     if (req.body && typeof req.body.confirmar_contrasena !== 'undefined') {
       return res.send("Error al restablecer la contraseña.");
     } else {
       res.status(500).json({ error: "Error al restablecer contraseña" });
     }
-  }
-};
-
-// 6. Login con Google
-export const googleAuth = async (req, res) => {
-  try {
-    const { idToken } = req.body;
-    const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const { email, name, sub, picture } = payload;
-
-    let user = await getUserByEmail(email);
-    if (!user) {
-      user = await createGoogleUser({ nombre: name, correo: email, google_id: sub, foto_url: picture });
-    } else if (!user.es_google) {
-      return res.status(403).json({ error: "Cuenta existe, debes vincular Google en la app." });
-    }
-    await updateLastLogin(user.id);
-    const token = generateToken({ id: user.id, correo: user.correo, nombre: user.nombre });
-    res.json({ mensaje: "Login con Google correcto", token, user });
-  } catch (err) {
-    res.status(500).json({ error: "Error con Google Auth", detalle: err.message });
-  }
-};
-
-// 7. Vincular Google a cuenta tradicional
-export const linkGoogle = async (req, res) => {
-  try {
-    const { email, idToken } = req.body;
-    const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-    const ticket = await client.verifyIdToken({
-      idToken,
-      audience: GOOGLE_CLIENT_ID,
-    });
-    const payload = ticket.getPayload();
-    const { email: googleEmail, sub, picture } = payload;
-
-    if (googleEmail !== email) return res.status(400).json({ error: 'El correo de Google no coincide.' });
-
-    let user = await getUserByEmail(email);
-    if (!user) return res.status(404).json({ error: "Usuario no encontrado" });
-
-    await linkGoogleModel(email, sub, picture);
-
-    user = await getUserByEmail(email); // Actualizado
-    const token = generateToken({ id: user.id, correo: user.correo, nombre: user.nombre });
-    res.json({ mensaje: "Cuenta vinculada con Google", token, user });
-  } catch (err) {
-    res.status(500).json({ error: "Error al vincular cuenta", detalle: err.message });
   }
 };

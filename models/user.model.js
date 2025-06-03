@@ -15,15 +15,7 @@ export const createUser = async ({ nombre, ap_pat, ap_mat, correo, contrasena, f
   return res.rows[0];
 };
 
-export const createGoogleUser = async ({ nombre, correo, google_id, foto_url }) => {
-  const res = await pool.query(
-    `INSERT INTO usuarios (nombre, correo, google_id, foto_url, es_google, verificado, creado_en)
-     VALUES ($1, $2, $3, $4, TRUE, TRUE, NOW())
-     RETURNING *`,
-    [nombre, correo, google_id, foto_url]
-  );
-  return res.rows[0];
-};
+
 
 export const updateLastLogin = async (id) => {
   await pool.query(
@@ -46,12 +38,6 @@ export const resetPassword = async (correo, newPass) => {
   );
 };
 
-export const linkGoogle = async (correo, google_id, foto_url) => {
-  await pool.query(
-    'UPDATE usuarios SET google_id = $1, es_google = TRUE, foto_url = $2 WHERE correo = $3',
-    [google_id, foto_url, correo]
-  );
-};
 
 // ✅ NUEVA FUNCIÓN para actualizar tipo_usuario
 export const updateTipoUsuario = async (correo, tipo_usuario) => {

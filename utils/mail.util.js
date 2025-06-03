@@ -23,13 +23,9 @@ export const sendVerificationEmail = async (to, webLink, appLink) => {
       <p>Para verificar tu cuenta, elige una de las siguientes opciones:</p>
       <ul>
         <li>
-          <b>Desde tu computadora:</b><br>
+          <b>Abre el siguiente link para VERIFICAR TU CUENTA:</b><br>
           <a href="${webLink}">Verificar cuenta en la web</a>
-        </li>
-        <li>
-          <b>Desde tu celular con la app instalada:</b><br>
-          <a href="${appLink}">Verificar desde la app</a>
-        </li>
+        </li>        
       </ul>
       <p>Si no solicitaste esto, ignora este mensaje.</p>
     `,
@@ -46,13 +42,9 @@ export const sendResetPasswordEmail = async (to, webLink, appLink) => {
       <p>Para restablecer tu contraseña, elige una de las siguientes opciones:</p>
       <ul>
         <li>
-          <b>Desde tu computadora:</b><br>
+          <b>Abre el siguiente link para RESTABLECER TU CONTRASEÑA:</b><br>
           <a href="${webLink}">Restablecer en la web</a>
-        </li>
-        <li>
-          <b>Desde tu celular con la app instalada:</b><br>
-          <a href="${appLink}">Restablecer desde la app</a>
-        </li>
+        </li>        
       </ul>
       <p>Si no solicitaste esto, ignora este mensaje.</p>
     `,
