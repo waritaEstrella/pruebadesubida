@@ -33,3 +33,55 @@ export const obtenerTipoUsuario = async (req, res) => {
     res.status(500).json({ mensaje: 'Error del servidor' });
   }
 };
+
+//para actualizar la imagen del usuario: 
+// controllers/user.controller.js
+
+const pool = require('../config/db');
+
+exports.actualizarImagenPerfil = async (req, res) => {
+  const { correo, imagen_perfil } = req.body;
+
+  if (!correo || !imagen_perfil) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+
+  try {
+    const result = await pool.query(
+      'UPDATE usuarios SET imagen_perfil = $1 WHERE correo = $2 RETURNING *',
+      [imagen_perfil, correo]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.status(200).json({ mensaje: 'Imagen actualizada correctamente', usuario: result.rows[0] });
+  } catch (error) {
+    console.error('Error al actualizar imagen de perfil:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+};
+
+// ----------------------------
+// OBTENER USUARIO POR CORREO
+// ----------------------------
+export const obtenerUsuarioPorCorreo = async (req, res) => {
+  const { correo } = req.params;
+
+  try {
+    const result = await pool.query(
+      'SELECT correo, nombre, apellido, imagen_perfil FROM usuarios WHERE correo = $1',
+      [correo]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error al obtener usuario:', error);
+    res.status(500).json({ error: 'Error del servidor' });
+  }
+};

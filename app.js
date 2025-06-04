@@ -12,18 +12,18 @@ const app = express();
 
 // Configuración de CORS
 app.use(cors({
-  origin: '*', // ⚠️ Cambia esto a tu dominio real en producción
+  origin: '*', // ⚠️ En producción, usa tu dominio real
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
-// Middleware para parsear JSON y formularios
-app.use(express.json());
+// Middleware para parsear JSON (con límite ampliado) y formularios
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 
 // Rutas
 app.use('/api/auth', authRoutes);
-app.use('/api/usuarios', userRoutes); // ← Ya permite acceder a /api/usuarios/correo/:correo
+app.use('/api/usuarios', userRoutes);
 
 // Ruta de prueba
 app.get('/', (req, res) => {
