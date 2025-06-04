@@ -1,6 +1,7 @@
 import { updateTipoUsuario } from '../models/user.model.js';
 import { getTipoUsuarioPorCorreo } from '../models/user.model.js';
-import pool from '../config/db.js'; // ✅ IMPORTAR COMO ES MODULE
+import { pool } from '../config/db.js'; // ✅ correcto
+
 
 export const updateTipoUsuarioController = async (req, res) => {
   const { correo, tipo_usuario } = req.body;
