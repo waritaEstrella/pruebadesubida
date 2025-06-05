@@ -1,10 +1,15 @@
 import express from 'express';
+
 import {
   updateTipoUsuarioController,
   obtenerTipoUsuario,
   actualizarImagenPerfil,
   obtenerUsuarioPorCorreo
 } from '../controllers/user.controller.js';
+
+import upload from '../utils/upload.js';
+import { subirImagenPerfil } from '../controllers/user.controller.js';
+
 
 const router = express.Router();
 
@@ -19,5 +24,8 @@ router.get('/correo/:correo', obtenerUsuarioPorCorreo);
 
 // Actualizar imagen de perfil
 router.put('/imagen', actualizarImagenPerfil);
+
+// Subir imagen a Cloudinary y actualizar en la BD
+router.post('/imagen/cloudinary', upload.single('imagen'), subirImagenPerfil);
 
 export default router;

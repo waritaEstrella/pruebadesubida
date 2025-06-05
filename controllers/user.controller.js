@@ -1,5 +1,6 @@
 import { updateTipoUsuario } from '../models/user.model.js';
 import { getTipoUsuarioPorCorreo } from '../models/user.model.js';
+import cloudinary from '../config/cloudinary.js';
 import { pool } from '../config/db.js'; // ✅ correcto
 
 
@@ -59,5 +60,35 @@ export const obtenerUsuarioPorCorreo = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener usuario:', error);
     res.status(500).json({ error: 'Error del servidor' });
+  }
+};
+
+export const subirImagenPerfil = async (req, res) => {
+  try {
+    const correo = req.body.correo;
+
+    if (!req.file || !correo) {
+      return res.status(400).json({ error: 'Faltan la imagen o el correo' });
+    }
+
+    const imagenURL = req.file.path; // URL segura de Cloudinary
+
+    const result = await pool.query(
+      'UPDATE usuarios SET imagen_perfil = $1 WHERE correo = $2 RETURNING *',
+      [imagenURL, correo]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    res.status(200).json({
+      mensaje: 'Imagen subida y guardada correctamente',
+      imagen_perfil: imagenURL,
+      usuario: result.rows[0],
+    });
+  } catch (error) {
+    console.error('Error al subir imagen:', error.message);
+    res.status(500).json({ error: 'Error al subir la imagen de perfil' });
   }
 };
