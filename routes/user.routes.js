@@ -1,14 +1,16 @@
 import express from 'express';
+import upload from '../utils/upload.js';
+
 
 import {
   updateTipoUsuarioController,
   obtenerTipoUsuario,
   actualizarImagenPerfil,
-  obtenerUsuarioPorCorreo
+  obtenerUsuarioPorCorreo,
+  subirImagenPerfil
 } from '../controllers/user.controller.js';
 
-import upload from '../utils/upload.js';
-import { subirImagenPerfil } from '../controllers/user.controller.js';
+
 
 
 const router = express.Router();
