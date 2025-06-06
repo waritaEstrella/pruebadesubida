@@ -1,8 +1,7 @@
-import { updateTipoUsuario } from '../models/user.model.js';
+import { updateTipoUsuario } from '../models/user.model.js'; 
 import { getTipoUsuarioPorCorreo } from '../models/user.model.js';
 import cloudinary from '../config/cloudinary.js';
-import { pool } from '../config/db.js'; // ✅ correcto
-
+import { pool } from '../config/db.js';
 
 export const updateTipoUsuarioController = async (req, res) => {
   const { correo, tipo_usuario } = req.body;
@@ -63,6 +62,15 @@ export const obtenerUsuarioPorCorreo = async (req, res) => {
   }
 };
 
+// 🔧 Utilidad para extraer el public_id desde la URL de Cloudinary
+function obtenerPublicIdDesdeUrl(url) {
+  const partes = url.split('/');
+  const nombreArchivo = partes[partes.length - 1]; // ej: abc123.jpg
+  const publicId = nombreArchivo.split('.')[0];   // abc123
+  return `perfiles_usuarios/${publicId}`;         // incluyendo la carpeta usada en Cloudinary
+}
+
+// ✅ Versión mejorada: subir nueva imagen y eliminar la anterior si existe
 export const subirImagenPerfil = async (req, res) => {
   try {
     const correo = req.body.correo;
@@ -71,24 +79,39 @@ export const subirImagenPerfil = async (req, res) => {
       return res.status(400).json({ error: 'Faltan la imagen o el correo' });
     }
 
-    const imagenURL = req.file.path; // URL segura de Cloudinary
+    // 🔍 Buscar imagen anterior
+    const usuario = await pool.query(
+      'SELECT imagen_perfil FROM usuarios WHERE correo = $1',
+      [correo]
+    );
+
+    if (usuario.rowCount > 0 && usuario.rows[0].imagen_perfil) {
+      const urlAnterior = usuario.rows[0].imagen_perfil;
+      const publicId = obtenerPublicIdDesdeUrl(urlAnterior);
+
+      try {
+        await cloudinary.uploader.destroy(publicId);
+        console.log(`🧹 Imagen anterior eliminada de Cloudinary: ${publicId}`);
+      } catch (err) {
+        console.warn(`⚠️ No se pudo eliminar la imagen anterior: ${publicId}`);
+      }
+    }
+
+    // 📤 Subida realizada automáticamente por multer-storage-cloudinary
+    const nuevaUrl = req.file.path;
 
     const result = await pool.query(
       'UPDATE usuarios SET imagen_perfil = $1 WHERE correo = $2 RETURNING *',
-      [imagenURL, correo]
+      [nuevaUrl, correo]
     );
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
-
     res.status(200).json({
-      mensaje: 'Imagen subida y guardada correctamente',
-      imagen_perfil: imagenURL,
+      mensaje: 'Imagen subida y reemplazada correctamente',
+      imagen_perfil: nuevaUrl,
       usuario: result.rows[0],
     });
   } catch (error) {
-    console.error('Error al subir imagen:', error.message);
+    console.error('🔥 Error al subir imagen:', error);
     res.status(500).json({ error: 'Error al subir la imagen de perfil' });
   }
 };
