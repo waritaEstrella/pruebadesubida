@@ -115,3 +115,55 @@ export const subirImagenPerfil = async (req, res) => {
     res.status(500).json({ error: 'Error al subir la imagen de perfil' });
   }
 };
+
+//actualizar nombre y fecha nac
+export const actualizarUsuarioController = async (req, res) => {
+  const { correo, nombre, ap_pat, ap_mat, fecha_nacimiento } = req.body;
+
+  if (!correo) {
+    return res.status(400).json({ error: 'Falta el correo del usuario' });
+  }
+
+  try {
+    const campos = [];
+    const valores = [];
+    let index = 1;
+
+    if (nombre !== undefined) {
+      campos.push(`nombre = $${index++}`);
+      valores.push(nombre);
+    }
+    if (ap_pat !== undefined) {
+      campos.push(`ap_pat = $${index++}`);
+      valores.push(ap_pat);
+    }
+    if (ap_mat !== undefined) {
+      campos.push(`ap_mat = $${index++}`);
+      valores.push(ap_mat);
+    }
+    if (fecha_nacimiento !== undefined) {
+      campos.push(`fecha_nacimiento = $${index++}`);
+      valores.push(fecha_nacimiento);
+    }
+
+    if (campos.length === 0) {
+      return res.status(400).json({ error: 'No se proporcionaron campos para actualizar' });
+    }
+
+    valores.push(correo); // último valor es para WHERE
+
+    const query = `
+      UPDATE usuarios
+      SET ${campos.join(', ')}
+      WHERE correo = $${index}
+    `;
+
+    await pool.query(query, valores);
+
+    res.json({ mensaje: 'Usuario actualizado correctamente' });
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error.message);
+    res.status(500).json({ error: 'Error del servidor al actualizar usuario' });
+  }
+};
+

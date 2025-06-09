@@ -7,7 +7,8 @@ import {
   obtenerTipoUsuario,
   actualizarImagenPerfil,
   obtenerUsuarioPorCorreo,
-  subirImagenPerfil
+  subirImagenPerfil,
+  actualizarUsuarioController
 } from '../controllers/user.controller.js';
 
 
@@ -29,5 +30,8 @@ router.put('/imagen', actualizarImagenPerfil);
 
 // Subir imagen a Cloudinary y actualizar en la BD
 router.post('/imagen/cloudinary', upload.single('imagen'), subirImagenPerfil);
+
+//actualizar nombre y fecha nacimiento
+router.patch('/actualizar', actualizarUsuarioController);
 
 export default router;
