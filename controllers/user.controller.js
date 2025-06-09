@@ -51,7 +51,7 @@ export const obtenerUsuarioPorCorreo = async (req, res) => {
   const { correo } = req.params;
   try {
     const result = await pool.query(
-      'SELECT correo, nombre, ap_pat, ap_mat, imagen_perfil FROM usuarios WHERE correo = $1',
+      'SELECT correo, nombre, ap_pat, ap_mat, imagen_perfil, fecha_nacimiento FROM usuarios WHERE correo = $1',
       [correo]
     );
     if (result.rowCount === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
