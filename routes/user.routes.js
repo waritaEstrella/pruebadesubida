@@ -1,37 +1,37 @@
 import express from 'express';
 import upload from '../utils/upload.js';
 
-
 import {
-  updateTipoUsuarioController,
-  obtenerTipoUsuario,
   actualizarImagenPerfil,
   obtenerUsuarioPorCorreo,
   subirImagenPerfil,
-  actualizarUsuarioController
+  actualizarUsuarioController,
+  obtenerInfoCompletaUsuario,
+  asignarTiposUsuarioController
 } from '../controllers/user.controller.js';
-
-
-
 
 const router = express.Router();
 
-// Actualizar tipo de usuario
-router.patch('/tipo_usuario', updateTipoUsuarioController);
+// ✅ Obtener tipos de usuario + es_admin + es_nuevo
+router.get('/info_completa/:correo', obtenerInfoCompletaUsuario);
 
-// Obtener tipo de usuario (solo devuelve tipo_usuario)
-router.get('/tipo_usuario/:correo', obtenerTipoUsuario);
-
-// Obtener usuario completo (incluye imagen_perfil)
+// ✅ Obtener datos del usuario (nombre, apellidos, imagen, etc.)
 router.get('/correo/:correo', obtenerUsuarioPorCorreo);
 
-// Actualizar imagen de perfil
+// ✅ Actualizar imagen de perfil en base de datos
 router.put('/imagen', actualizarImagenPerfil);
 
-// Subir imagen a Cloudinary y actualizar en la BD
+// ✅ Subir imagen a Cloudinary
 router.post('/imagen/cloudinary', upload.single('imagen'), subirImagenPerfil);
 
-//actualizar nombre y fecha nacimiento
+// ✅ Actualizar nombre y fecha de nacimiento
 router.patch('/actualizar', actualizarUsuarioController);
+
+//registrar con tipo
+
+router.post('/registrar_con_tipo', registrarUsuarioConTipo);
+
+//seleccionar perfil
+router.post('/asignar_tipo', asignarTiposUsuarioController);
 
 export default router;

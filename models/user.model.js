@@ -1,56 +1,85 @@
 import { pool } from '../config/db.js';
 
+// ✅ Obtener usuario completo por correo
 export const getUserByEmail = async (correo) => {
-  const res = await pool.query('SELECT * FROM usuarios WHERE correo=$1', [correo]);
+  const res = await pool.query('SELECT * FROM usuario WHERE correo = $1', [correo]);
   return res.rows[0];
 };
 
-export const createUser = async ({ nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento, tipo_usuario }) => {
+// ✅ Crear usuario (ya no incluye tipo_usuario porque es otra tabla ahora)
+export const createUser = async ({ nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento }) => {
   const res = await pool.query(
-    `INSERT INTO usuarios (nombre, ap_pat, ap_mat, correo, contraseña, fecha_nacimiento, tipo_usuario, verificado, creado_en)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, FALSE, NOW())
+    `INSERT INTO usuario (nombre, ap_pat, ap_mat, correo, contraseña, fecha_nacimiento, verificado, creado_en)
+     VALUES ($1, $2, $3, $4, $5, $6, FALSE, NOW())
      RETURNING *`,
-    [nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento, tipo_usuario]
+    [nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento]
   );
   return res.rows[0];
 };
 
+// ✅ Insertar relación usuario - tipo_usuario
+export const insertarTipoUsuario = async (idUsuario, idTipoUsuario) => {
+  const res = await pool.query(
+    `INSERT INTO usuarios_tipo_usuario (id_usuario, id_tipo_usuario)
+     VALUES ($1, $2)
+     ON CONFLICT (id_usuario, id_tipo_usuario) DO NOTHING`,
+    [idUsuario, idTipoUsuario]
+  );
+  return res;
+};
 
+// ✅ Obtener tipos de usuario por ID de usuario
+export const getTiposUsuarioPorId = async (idUsuario) => {
+  const result = await pool.query(
+    `SELECT tu.tipo_usuario 
+     FROM usuarios_tipo_usuario utu
+     JOIN tipo_usuario tu ON tu.id = utu.id_tipo_usuario
+     WHERE utu.id_usuario = $1 AND utu.activo = true`,
+    [idUsuario]
+  );
+  return result.rows.map(row => row.tipo_usuario);
+};
 
+// ✅ Actualizar último inicio de sesión
 export const updateLastLogin = async (id) => {
   await pool.query(
-    'UPDATE usuarios SET ultimo_login = NOW() WHERE id = $1',
+    'UPDATE usuario SET ultimo_login = NOW() WHERE id = $1',
     [id]
   );
 };
 
+// ✅ Verificar correo
 export const verifyEmail = async (correo) => {
   await pool.query(
-    'UPDATE usuarios SET verificado = TRUE WHERE correo = $1',
+    'UPDATE usuario SET verificado = TRUE WHERE correo = $1',
     [correo]
   );
 };
 
+// ✅ Restablecer contraseña
 export const resetPassword = async (correo, newPass) => {
   await pool.query(
-    'UPDATE usuarios SET contraseña = $1 WHERE correo = $2',
+    'UPDATE usuario SET contraseña = $1 WHERE correo = $2',
     [newPass, correo]
   );
 };
 
+// Para obtener los IDs desde los nombres de tipo de usuario:
+export const getTipoUsuarioIdsByNombres = async (tipos) => {
+  const result = await pool.query(
+    `SELECT id FROM tipo_usuario WHERE tipo_usuario = ANY($1::text[])`,
+    [tipos]
+  );
+  return result.rows.map(row => row.id); // Devuelve [1, 2, ...]
+};
 
-// ✅ NUEVA FUNCIÓN para actualizar tipo_usuario
-export const updateTipoUsuario = async (correo, tipo_usuario) => {
+// Marcar es_nuevo en falso
+export const marcarUsuarioComoNoNuevo = async (idUsuario) => {
   await pool.query(
-    'UPDATE usuarios SET tipo_usuario = $1 WHERE correo = $2',
-    [tipo_usuario, correo]
+    `UPDATE usuario SET es_nuevo = FALSE WHERE id = $1`,
+    [idUsuario]
   );
 };
 
-//funcion para obtener tipo de usuario
-export const getTipoUsuarioPorCorreo = async (correo) => {
-  const query = 'SELECT tipo_usuario FROM usuarios WHERE correo = $1';
-  const values = [correo];
-  const result = await pool.query(query, values);
-  return result.rows[0]; // devuelve { tipo_usuario: '...' }
-};
+
+
