@@ -2,6 +2,9 @@ import bcrypt from 'bcryptjs';
 import cloudinary from '../config/cloudinary.js';
 import { pool } from '../config/db.js';
 import { getUserByEmail, insertarTipoUsuario } from '../models/user.model.js';
+import { generateToken } from '../utils/jwt.util.js';
+import { sendVerificationEmail } from '../utils/mail.util.js';
+
 
 // ✅ Obtener tipos de usuario, es_nuevo y es_admin
 export const obtenerInfoCompletaUsuario = async (req, res) => {
