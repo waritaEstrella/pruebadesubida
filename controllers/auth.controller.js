@@ -110,10 +110,10 @@ export const login = async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
     const user = await getUserByEmail(correo);
-    if (!user || !user.contraseña) return res.status(401).json({ error: "Credenciales inválidas" });
+    if (!user || !user.contrasena) return res.status(401).json({ error: "Credenciales inválidas" });
     if (!user.verificado) return res.status(403).json({ error: "Verifica tu correo antes de iniciar sesión" });
 
-    const valid = await comparePassword(contrasena, user.contraseña); // 🔐 Validar hash
+    const valid = await comparePassword(contrasena, user.contrasena); // 🔐 Validar hash
     if (!valid) return res.status(401).json({ error: "Credenciales inválidas" });
 
     await updateLastLogin(user.id);

@@ -9,7 +9,7 @@ export const getUserByEmail = async (correo) => {
 // ✅ Crear usuario (ya no incluye tipo_usuario porque es otra tabla ahora)
 export const createUser = async ({ nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento }) => {
   const res = await pool.query(
-    `INSERT INTO usuario (nombre, ap_pat, ap_mat, correo, contraseña, fecha_nacimiento, verificado, creado_en)
+    `INSERT INTO usuario (nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento, verificado, creado_en)
      VALUES ($1, $2, $3, $4, $5, $6, FALSE, NOW())
      RETURNING *`,
     [nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento]
@@ -59,7 +59,7 @@ export const verifyEmail = async (correo) => {
 // ✅ Restablecer contraseña
 export const resetPassword = async (correo, newPass) => {
   await pool.query(
-    'UPDATE usuario SET contraseña = $1 WHERE correo = $2',
+    'UPDATE usuario SET contrasena = $1 WHERE correo = $2',
     [newPass, correo]
   );
 };

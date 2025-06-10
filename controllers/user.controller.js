@@ -203,7 +203,7 @@ export const registrarUsuarioConTipo = async (req, res) => {
 
     // Crear el nuevo usuario
     const nuevoUsuario = await pool.query(
-      `INSERT INTO usuario (nombre, ap_pat, ap_mat, correo, contraseña, fecha_nacimiento, verificado, creado_en)
+      `INSERT INTO usuario (nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento, verificado, creado_en)
        VALUES ($1, $2, $3, $4, $5, $6, FALSE, NOW())
        RETURNING *`,
       [nombre || '', ap_pat || '', ap_mat || '', correo, hashedPassword, fecha_nacimiento || null]
