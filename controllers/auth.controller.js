@@ -18,9 +18,7 @@ const BASE_URL = process.env.BASE_URL || "http://localhost:8080";
 export const resetPasswordPage = (req, res) => {
   const { token } = req.query;
   if (!token) {
-    return res.send(`
-      <html><body><h3>Token inválido o faltante.</h3></body></html>
-    `);
+    return res.send(`<html><body><h3>Token inválido o faltante.</h3></body></html>`);
   }
   res.send(`
     <html>
@@ -51,14 +49,14 @@ export const resetPasswordPage = (req, res) => {
   `);
 };
 
-// 1. Registro tradicional con email y contraseña
+// 1. Registro tradicional con email y contraseña (ya usa hash)
 export const register = async (req, res) => {
   try {
     const { nombre, ap_pat, ap_mat, correo, contrasena, fecha_nacimiento, tipo_usuario } = req.body;
     const existing = await getUserByEmail(correo);
     if (existing) return res.status(409).json({ error: "Correo ya registrado" });
 
-    const hashed = await hashPassword(contrasena);
+    const hashed = await hashPassword(contrasena); // 🔐 Encriptar contraseña
     const user = await createUser({
       nombre, ap_pat, ap_mat, correo,
       contrasena: hashed, fecha_nacimiento, tipo_usuario
@@ -107,7 +105,7 @@ export const verifyEmailController = async (req, res) => {
   }
 };
 
-// 3. Login tradicional
+// 3. Login tradicional (usa comparePassword seguro)
 export const login = async (req, res) => {
   try {
     const { correo, contrasena } = req.body;
@@ -115,7 +113,7 @@ export const login = async (req, res) => {
     if (!user || !user.contraseña) return res.status(401).json({ error: "Credenciales inválidas" });
     if (!user.verificado) return res.status(403).json({ error: "Verifica tu correo antes de iniciar sesión" });
 
-    const valid = await comparePassword(contrasena, user.contraseña);
+    const valid = await comparePassword(contrasena, user.contraseña); // 🔐 Validar hash
     if (!valid) return res.status(401).json({ error: "Credenciales inválidas" });
 
     await updateLastLogin(user.id);
@@ -126,7 +124,7 @@ export const login = async (req, res) => {
   }
 };
 
-// 4. Recuperar contraseña (envía link por correo)
+// 4. Enviar link de recuperación de contraseña
 export const forgotPassword = async (req, res) => {
   try {
     const { correo } = req.body;
@@ -144,7 +142,7 @@ export const forgotPassword = async (req, res) => {
   }
 };
 
-// 5. Procesa POST para restablecer contraseña (web y app)
+// 5. Procesar restablecimiento de contraseña (formulario web o app)
 export const resetPasswordController = async (req, res) => {
   try {
     const { token, nueva_contrasena, confirmar_contrasena } = req.body;
@@ -158,13 +156,11 @@ export const resetPasswordController = async (req, res) => {
     const data = verifyToken(token);
     if (!data) return res.send("Token inválido o expirado.");
 
-    const hashed = await hashPassword(nueva_contrasena);
+    const hashed = await hashPassword(nueva_contrasena); // 🔐 Encriptar nueva contraseña
     await resetPassword(data.correo, hashed);
 
     if (typeof confirmar_contrasena !== 'undefined') {
-      return res.send(`
-        <html><body><h3>¡Contraseña restablecida exitosamente!</h3><p>Ya puedes iniciar sesión.</p></body></html>
-      `);
+      return res.send(`<html><body><h3>¡Contraseña restablecida exitosamente!</h3><p>Ya puedes iniciar sesión.</p></body></html>`);
     } else {
       return res.json({ mensaje: "Contraseña restablecida con éxito." });
     }
