@@ -4,7 +4,10 @@ import { pool } from '../config/db.js';
 import { getUserByEmail, insertarTipoUsuario } from '../models/user.model.js';
 import { generateToken } from '../utils/jwt.util.js';
 import { sendVerificationEmail } from '../utils/mail.util.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080'; // ✅ Agregado
 
 // ✅ Obtener tipos de usuario, es_nuevo y es_admin
 export const obtenerInfoCompletaUsuario = async (req, res) => {
@@ -60,7 +63,6 @@ export const obtenerUsuarioPorCorreo = async (req, res) => {
   }
 };
 
-// ✅ Subir nueva imagen y eliminar la anterior si existe
 function obtenerPublicIdDesdeUrl(url) {
   const partes = url.split('/');
   const nombreArchivo = partes[partes.length - 1];
@@ -68,6 +70,7 @@ function obtenerPublicIdDesdeUrl(url) {
   return `perfiles_usuarios/${publicId}`;
 }
 
+// ✅ Subir imagen
 export const subirImagenPerfil = async (req, res) => {
   try {
     const correo = req.body.correo;
@@ -111,7 +114,7 @@ export const subirImagenPerfil = async (req, res) => {
   }
 };
 
-// ✅ Actualizar imagen con base64 (opcional)
+// ✅ Actualizar imagen base64
 export const actualizarImagenPerfil = async (req, res) => {
   const { correo, imagen_perfil } = req.body;
   if (!correo || !imagen_perfil) {
@@ -181,8 +184,7 @@ export const actualizarUsuarioController = async (req, res) => {
   }
 };
 
-// ✅ Registrar usuario con uno o más tipos (con encriptación de contraseña)
-// ✅ Registrar usuario con uno o más tipos (con encriptación de contraseña)
+// ✅ Registrar usuario con tipos y envío de correo
 export const registrarUsuarioConTipo = async (req, res) => {
   const {
     nombre,
@@ -219,12 +221,9 @@ export const registrarUsuarioConTipo = async (req, res) => {
       }
     }
 
-    // ✅ Enviar correo de verificación
     const token = generateToken({ correo }, '1d');
     const webLink = `${BASE_URL}/api/auth/verify-email?token=${token}`;
     const appLink = `creciendocontigo://verify?token=${token}`;
-
-    console.log("📨 Enviando correo de verificación a:", correo);
     await sendVerificationEmail(correo, webLink, appLink);
 
     res.status(201).json({
@@ -242,7 +241,7 @@ export const registrarUsuarioConTipo = async (req, res) => {
   }
 };
 
-// ✅ Asignar tipo de usuario luego de registrarse
+// ✅ Asignar tipos a usuario existente
 export const asignarTiposUsuarioController = async (req, res) => {
   const { correo, tipos_usuario } = req.body;
 
