@@ -18,6 +18,15 @@ export const getSintomas = async () => {
   return res.rows;
 };
 
+//Obtener sintomas por usuario
+export const getSintomasPorUsuarioCreador = async (idUsuarioCreador) => {
+  const res = await pool.query(
+    'SELECT * FROM sintoma WHERE id_usuario_creador = $1 AND estado = TRUE',
+    [idUsuarioCreador]
+  );
+  return res.rows;
+};
+
 // Actualizar síntoma
 export const updateSintoma = async (id, { nombreSintoma, idUsuarioEditor }) => {
   const res = await pool.query(

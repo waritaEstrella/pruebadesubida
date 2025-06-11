@@ -63,3 +63,25 @@ export const deleteRegistroAntojo = async (id) => {
     [id]
   );
 };
+
+//Obtener registros de antojos por usuario y fecha
+export const getRegistrosAntojoPorUsuarioYFecha = async (idUsuario, fecha) => {
+  const res = await pool.query(
+    `SELECT * FROM registro_antojo
+     WHERE id_usuario = $1 AND fecha = $2 AND estado = TRUE
+     ORDER BY creado_en DESC`,
+    [idUsuario, fecha]
+  );
+  return res.rows;
+};
+
+//Obtener registros de antojos por usuario y antojo
+export const getRegistrosAntojoPorUsuarioYAntojo = async (idUsuario, idAntojo) => {
+  const res = await pool.query(
+    `SELECT * FROM registro_antojo
+     WHERE id_usuario = $1 AND id_antojo = $2 AND estado = TRUE
+     ORDER BY fecha DESC, creado_en DESC`,
+    [idUsuario, idAntojo]
+  );
+  return res.rows;
+};

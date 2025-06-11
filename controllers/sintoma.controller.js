@@ -1,4 +1,4 @@
-import { getSintomas, createSintoma, updateSintoma, deleteSintoma } from '../models/sintoma.model.js';
+import { getSintomas, createSintoma, updateSintoma, deleteSintoma, getSintomasPorUsuarioCreador } from '../models/sintoma.model.js';
 
 // Obtener todos los síntomas activos
 export const obtenerSintomas = async (req, res) => {
@@ -10,6 +10,22 @@ export const obtenerSintomas = async (req, res) => {
     res.status(500).json({ error: 'Error del servidor al obtener síntomas' });
   }
 };
+
+//Obtener todos los sintomas por usuario
+export const obtenerSintomasPorUsuarioCreador = async (req, res) => {
+  const { idUsuarioCreador } = req.params;
+  if (!idUsuarioCreador) {
+    return res.status(400).json({ error: 'Falta el idUsuarioCreador' });
+  }
+  try {
+    const sintomas = await getSintomasPorUsuarioCreador(idUsuarioCreador);
+    res.status(200).json(sintomas);
+  } catch (error) {
+    console.error('Error al obtener síntomas por usuario creador:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener síntomas por usuario creador' });
+  }
+};
+
 
 // Crear un nuevo síntoma
 export const crearSintoma = async (req, res) => {

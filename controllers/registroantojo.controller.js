@@ -2,7 +2,9 @@ import {
   createRegistroAntojo,
   getRegistrosAntojoPorUsuario,
   updateRegistroAntojo,
-  deleteRegistroAntojo
+  deleteRegistroAntojo,
+  getRegistrosAntojoPorUsuarioYFecha,
+  getRegistrosAntojoPorUsuarioYAntojo
 } from '../models/registroantojo.model.js';
 
 // Obtener registros de antojo activos por usuario
@@ -24,14 +26,14 @@ export const obtenerRegistrosAntojoPorUsuario = async (req, res) => {
 export const crearRegistroAntojo = async (req, res) => {
   const {
     idUsuario,
-    idAntojo = null,
+    idAntojo,
     descripcion,
     fecha,
-    satisfecho = false,
-    nota = null,
+    satisfecho,
+    nota,
     idUsuarioCreador
   } = req.body;
-  if (!idUsuario || !descripcion || !fecha || !idUsuarioCreador) {
+  if (!idUsuario || !idAntojo || !descripcion || !fecha || !idUsuarioCreador) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
   try {
@@ -92,3 +94,37 @@ export const eliminarRegistroAntojo = async (req, res) => {
     res.status(500).json({ error: 'Error del servidor al eliminar registro de antojo' });
   }
 };
+
+//Obtener registros de antojos por usuario y fecha
+export const obtenerRegistrosAntojoPorUsuarioYFecha = async (req, res) => {
+  const { idUsuario, fecha } = req.params;
+  if (!idUsuario || !fecha) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+  try {
+    const registros = await getRegistrosAntojoPorUsuarioYFecha(idUsuario, fecha);
+    res.status(200).json(registros);
+  } catch (error) {
+    console.error('Error al obtener registros de antojo por usuario y fecha:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener registros de antojo por usuario y fecha' });
+  }
+};
+
+//Obtener registros de antojos por tipo de antojo
+export const obtenerRegistrosAntojoPorUsuarioYAntojo = async (req, res) => {
+  const { idUsuario, idAntojo } = req.params;
+  if (!idUsuario || !idAntojo) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+  try {
+    const registros = await getRegistrosAntojoPorUsuarioYAntojo(idUsuario, idAntojo);
+    res.status(200).json(registros);
+  } catch (error) {
+    console.error('Error al obtener registros de antojo por usuario y antojo:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener registros de antojo por usuario y antojo' });
+  }
+};
+
+
+
+
