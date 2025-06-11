@@ -18,6 +18,15 @@ export const crearSintoma = async (req, res) => {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
   try {
+    // Verificar si ya existe un síntoma con ese nombre
+    const sintomasExistentes = await getSintomas();
+    const existe = sintomasExistentes.some(
+      s => s.nombre_sintoma.trim().toLowerCase() === nombreSintoma.trim().toLowerCase()
+    );
+    if (existe) {
+      return res.status(409).json({ error: 'El síntoma ya existe' });
+    }
+
     const sintoma = await createSintoma({ nombreSintoma, idUsuarioCreador });
     res.status(201).json(sintoma);
   } catch (error) {
