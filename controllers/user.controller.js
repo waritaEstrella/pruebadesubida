@@ -47,21 +47,23 @@ export const obtenerInfoCompletaUsuario = async (req, res) => {
   }
 };
 
-// ✅ Obtener datos básicos por correo
+// ✅ Obtener datos básicos por correo con id
 export const obtenerUsuarioPorCorreo = async (req, res) => {
   const { correo } = req.params;
   try {
     const result = await pool.query(
-      'SELECT correo, nombre, ap_pat, ap_mat, imagen_perfil, fecha_nacimiento FROM usuario WHERE correo = $1',
+      'SELECT id, correo, nombre, ap_pat, ap_mat, imagen_perfil, fecha_nacimiento FROM usuario WHERE correo = $1',
       [correo]
     );
-    if (result.rowCount === 0) return res.status(404).json({ error: 'Usuario no encontrado' });
+    if (result.rowCount === 0)
+      return res.status(404).json({ error: 'Usuario no encontrado' });
     res.status(200).json(result.rows[0]);
   } catch (error) {
     console.error('Error al obtener usuario:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 };
+
 
 function obtenerPublicIdDesdeUrl(url) {
   const partes = url.split('/');
