@@ -1,90 +1,84 @@
 import {
-  createRegistroEnfermedad,
-  getRegistrosEnfermedadPorHijo,
-  updateRegistroEnfermedad,
-  deleteRegistroEnfermedad
-} from '../models/registroenfermedad.model.js';
+  createCatalogoVacuna,
+  getCatalogoVacunas,
+  updateCatalogoVacuna,
+  deleteCatalogoVacuna
+} from '../models/catalogovacuna.model.js';
 
-// Obtener registros de enfermedad activos por hijo
-export const obtenerRegistrosEnfermedadPorHijo = async (req, res) => {
-  const { idHijo } = req.params;
-  if (!idHijo) {
-    return res.status(400).json({ error: 'Falta el idHijo' });
-  }
+// Obtener todas las vacunas del catálogo
+export const obtenerCatalogoVacunas = async (req, res) => {
   try {
-    const registros = await getRegistrosEnfermedadPorHijo(idHijo);
-    res.status(200).json(registros);
+    const vacunas = await getCatalogoVacunas();
+    res.status(200).json(vacunas);
   } catch (error) {
-    console.error('Error al obtener registros de enfermedad:', error.message);
-    res.status(500).json({ error: 'Error del servidor al obtener registros de enfermedad' });
+    console.error('Error al obtener catálogo de vacunas:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener catálogo de vacunas' });
   }
 };
 
-// Crear registro de enfermedad
-export const crearRegistroEnfermedad = async (req, res) => {
+// Crear vacuna en el catálogo
+export const crearCatalogoVacuna = async (req, res) => {
   const {
-    idHijo,
-    fecha,
-    diagnostico,
-    tratamiento,
-    idMedico = null,
-    idUsuarioCreador
+    nombre,
+    nroDosis,
+    edadRecomendadaMeses,
+    utilidad,
+    intervaloDosisMeses
   } = req.body;
-  if (!idHijo || !fecha || !diagnostico || !idUsuarioCreador) {
+  if (!nombre || !nroDosis || !edadRecomendadaMeses || !intervaloDosisMeses) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
   try {
-    const registro = await createRegistroEnfermedad({
-      idHijo,
-      fecha,
-      diagnostico,
-      tratamiento,
-      idMedico,
-      idUsuarioCreador
+    const vacuna = await createCatalogoVacuna({
+      nombre,
+      nroDosis,
+      edadRecomendadaMeses,
+      utilidad,
+      intervaloDosisMeses
     });
-    res.status(201).json(registro);
+    res.status(201).json(vacuna);
   } catch (error) {
-    console.error('Error al crear registro de enfermedad:', error.message);
-    res.status(500).json({ error: 'Error del servidor al crear registro de enfermedad' });
+    console.error('Error al crear vacuna en el catálogo:', error.message);
+    res.status(500).json({ error: 'Error del servidor al crear vacuna en el catálogo' });
   }
 };
 
-// Actualizar registro de enfermedad
-export const actualizarRegistroEnfermedad = async (req, res) => {
+// Actualizar vacuna del catálogo
+export const actualizarCatalogoVacuna = async (req, res) => {
   const { id } = req.params;
   const {
-    fecha,
-    diagnostico,
-    tratamiento,
-    idMedico = null,
-    idUsuarioEditor
+    nombre,
+    nroDosis,
+    edadRecomendadaMeses,
+    utilidad,
+    intervaloDosisMeses
   } = req.body;
-  if (!fecha || !diagnostico || !idUsuarioEditor) {
+  if (!nombre || !nroDosis || !edadRecomendadaMeses || !intervaloDosisMeses) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
   try {
-    const registro = await updateRegistroEnfermedad(id, {
-      fecha,
-      diagnostico,
-      tratamiento,
-      idMedico,
-      idUsuarioEditor
+    const vacuna = await updateCatalogoVacuna(id, {
+      nombre,
+      nroDosis,
+      edadRecomendadaMeses,
+      utilidad,
+      intervaloDosisMeses
     });
-    res.status(200).json(registro);
+    res.status(200).json(vacuna);
   } catch (error) {
-    console.error('Error al actualizar registro de enfermedad:', error.message);
-    res.status(500).json({ error: 'Error del servidor al actualizar registro de enfermedad' });
+    console.error('Error al actualizar vacuna del catálogo:', error.message);
+    res.status(500).json({ error: 'Error del servidor al actualizar vacuna del catálogo' });
   }
 };
 
-// Eliminar (desactivar) registro de enfermedad
-export const eliminarRegistroEnfermedad = async (req, res) => {
+// Eliminar vacuna del catálogo (borrado físico)
+export const eliminarCatalogoVacuna = async (req, res) => {
   const { id } = req.params;
   try {
-    await deleteRegistroEnfermedad(id);
-    res.status(200).json({ mensaje: 'Registro de enfermedad eliminado correctamente' });
+    await deleteCatalogoVacuna(id);
+    res.status(200).json({ mensaje: 'Vacuna eliminada correctamente' });
   } catch (error) {
-    console.error('Error al eliminar registro de enfermedad:', error.message);
-    res.status(500).json({ error: 'Error del servidor al eliminar registro de enfermedad' });
+    console.error('Error al eliminar vacuna del catálogo:', error.message);
+    res.status(500).json({ error: 'Error del servidor al eliminar vacuna del catálogo' });
   }
 };
