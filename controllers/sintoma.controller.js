@@ -14,7 +14,7 @@ export const obtenerSintomas = async (req, res) => {
 // Crear un nuevo síntoma
 export const crearSintoma = async (req, res) => {
   const { nombreSintoma, idUsuarioCreador } = req.body;
-  if (!nombreSintoma || !idUsuarioCreador) {
+  if (!nombreSintoma) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
   try {

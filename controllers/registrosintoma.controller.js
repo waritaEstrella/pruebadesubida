@@ -3,8 +3,11 @@ import {
   getRegistrosSintoma,
   getRegistrosSintomaPorUsuario,
   updateRegistroSintoma,
-  deleteRegistroSintoma
+  deleteRegistroSintoma,
+  getRegistrosSintomaPorUsuarioYSintoma
 } from '../models/registrosintoma.model.js';
+import { getRegistrosSintomaPorUsuarioYFecha } from '../models/registrosintoma.model.js';
+
 
 // Obtener todos los registros de síntoma activos
 export const obtenerRegistrosSintoma = async (req, res) => {
@@ -88,3 +91,34 @@ export const eliminarRegistroSintoma = async (req, res) => {
     res.status(500).json({ error: 'Error del servidor al eliminar registro de síntoma' });
   }
 };
+
+//Obtener registro de sintomas por usuario y fecha seleccionada 
+export const obtenerRegistrosSintomaPorUsuarioYFecha = async (req, res) => {
+  const { idUsuario, fecha } = req.params;
+  if (!idUsuario || !fecha) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+  try {
+    const registros = await getRegistrosSintomaPorUsuarioYFecha(idUsuario, fecha);
+    res.status(200).json(registros);
+  } catch (error) {
+    console.error('Error al obtener registros de síntoma por usuario y fecha:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener registros de síntoma por usuario y fecha' });
+  }
+};
+
+//OBtener registro de sintomas por sintoma y por usuario
+export const obtenerRegistrosSintomaPorUsuarioYSintoma = async (req, res) => {
+  const { idUsuario, idSintoma } = req.params;
+  if (!idUsuario || !idSintoma) {
+    return res.status(400).json({ error: 'Faltan datos requeridos' });
+  }
+  try {
+    const registros = await getRegistrosSintomaPorUsuarioYSintoma(idUsuario, idSintoma);
+    res.status(200).json(registros);
+  } catch (error) {
+    console.error('Error al obtener registros de síntoma por usuario y síntoma:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener registros de síntoma por usuario y síntoma' });
+  }
+};
+
