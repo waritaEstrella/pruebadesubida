@@ -30,6 +30,9 @@ import registrologroRoutes from './routes/registrologro.routes.js';
 import guiaRoutes from './routes/guia.routes.js';
 import subguiaRoutes from './routes/subguia.routes.js';
 import imagenessubguiaRoutes from './routes/imagenessubguia.routes.js';
+import antojoRoutes from './routes/antojo.routes.js';
+import registroAntojoRoutes from './routes/registroantojo.routes.js';
+
 
 
 dotenv.config();
@@ -75,6 +78,8 @@ app.use('/api/registrologro', registrologroRoutes);
 app.use('/api/guia', guiaRoutes);
 app.use('/api/subguia', subguiaRoutes);
 app.use('/api/imagenessubguia', imagenessubguiaRoutes);
+app.use('/api/antojo', antojoRoutes);
+app.use('/api/registroantojo', registroAntojoRoutes);
 
 
 // Ruta de prueba
