@@ -23,6 +23,15 @@ export const getAntojos = async () => {
   return res.rows;
 };
 
+//Obtener sintomas por usuario
+export const getAntojosPorUsuarioCreador = async (idUsuarioCreador) => {
+  const res = await pool.query(
+    'SELECT * FROM antojo WHERE id_usuario_creador = $1 AND estado = TRUE',
+    [idUsuarioCreador]
+  );
+  return res.rows;
+};
+
 // Actualizar antojo
 export const updateAntojo = async (id, {
   tipoAntojo,
