@@ -3,7 +3,7 @@ import {
   getAntojos,
   updateAntojo,
   deleteAntojo,
-  getAntojosPorUsuarioCreador
+  getAntojosPorUsuarioCreador,
 } from '../models/antojo.model.js';
 
 // Obtener todos los antojos activos
@@ -17,7 +17,7 @@ export const obtenerAntojos = async (req, res) => {
   }
 };
 
-//Obtener toso los antojos de un usuario
+//Obtener todos los antojos de un usuario
 export const obtenerAntojoPorUsuarioCreador = async (req, res) => {
   const { idUsuarioCreador } = req.params;
   if (!idUsuarioCreador) {
@@ -25,7 +25,7 @@ export const obtenerAntojoPorUsuarioCreador = async (req, res) => {
   }
   try {
     const antojos = await getAntojosPorUsuarioCreador(idUsuarioCreador);
-    res.status(200).json(sintomas);
+    res.status(200).json(antojos);
   } catch (error) {
     console.error('Error al obtener antojos por usuario creador:', error.message);
     res.status(500).json({ error: 'Error del servidor al obtener antojos por usuario creador' });
