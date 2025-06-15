@@ -49,6 +49,6 @@ export const deleteSintomaYRegistros = async (id) => {
   );
 
   await pool.query(
-    'UPDATE SINTOMA SET ESTADO = FALSE, , EDITADO_EN = NOW() WHERE ID = $1', [id]
+    'UPDATE SINTOMA SET ESTADO = FALSE, EDITADO_EN = NOW() WHERE ID = $1', [id]
   );
 } 
