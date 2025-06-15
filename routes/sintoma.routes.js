@@ -4,7 +4,8 @@ import {
   crearSintoma,
   actualizarSintoma,
   eliminarSintoma,
-  obtenerSintomasPorUsuarioCreador
+  obtenerSintomasPorUsuarioCreador,
+  eliminarSintomaYRegistros
 } from '../controllers/sintoma.controller.js';
 
 const router = Router();
@@ -12,7 +13,8 @@ const router = Router();
 router.get('/', obtenerSintomas);
 router.post('/', crearSintoma);
 router.put('/:id', actualizarSintoma);
-router.delete('/:id', eliminarSintoma);
+//router.delete('/:id', eliminarSintoma);
+router.delete('/:id', eliminarSintomaYRegistros);
 router.get('/usuario/:idUsuarioCreador', obtenerSintomasPorUsuarioCreador);
 
 export default router;

@@ -56,3 +56,14 @@ export const deleteAntojo = async (id) => {
     [id]
   );
 };
+
+// Eliminar (desactivar) antojo y registro antojo
+export const deleteAntojoYRegistros = async (id) => {
+  await pool.query(
+    'UPDATE REGISTRO_ANTOJO SET ESTADO = FALSE, EDITADO_EN = NOW() WHERE ID_ANTOJO = $1', [id]
+  );
+
+  await pool.query(
+    'UPDATE ANTOJO SET ESTADO = FALSE, , EDITADO_EN = NOW() WHERE ID = $1', [id]
+  );
+}

@@ -13,6 +13,7 @@ router.get('/', obtenerAntojos);
 router.get('/usuario/:idUsuarioCreador', obtenerAntojoPorUsuarioCreador);
 router.post('/', crearAntojo);
 router.put('/:id', actualizarAntojo);
-router.delete('/:id', eliminarAntojo);
+//router.delete('/:id', eliminarAntojo);
+router.delete('/:id', eliminarAntojoYRegistros);
 
 export default router;

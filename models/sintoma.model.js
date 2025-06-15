@@ -41,3 +41,14 @@ export const updateSintoma = async (id, { nombreSintoma, idUsuarioEditor }) => {
 export const deleteSintoma = async (id) => {
   await pool.query('UPDATE SINTOMA SET ESTADO = FALSE WHERE ID = $1', [id]);
 };
+
+// Eliminar sintoma y sus registros
+export const deleteSintomaYRegistros = async (id) => {
+  await pool.query(
+    'UPDATE REGISTRO_SINTOMA SET ESTADO = FALSE, EDITADO_EN = NOW() WHERE ID_SINTOMA = $1', [id]
+  );
+
+  await pool.query(
+    'UPDATE SINTOMA SET ESTADO = FALSE, , EDITADO_EN = NOW() WHERE ID = $1', [id]
+  );
+} 

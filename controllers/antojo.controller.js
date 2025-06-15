@@ -4,6 +4,7 @@ import {
   updateAntojo,
   deleteAntojo,
   getAntojosPorUsuarioCreador,
+  deleteAntojoYRegistros
 } from '../models/antojo.model.js';
 
 // Obtener todos los antojos activos
@@ -72,5 +73,17 @@ export const eliminarAntojo = async (req, res) => {
   } catch (error) {
     console.error('Error al eliminar antojo:', error.message);
     res.status(500).json({ error: 'Error del servidor al eliminar antojo' });
+  }
+};
+
+// Eliminar (desactivar) sintoma y registro sintoma
+
+export const eliminarAntojoYRegistros = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteAntojoYRegistros(id);
+    res.status(200).json({ message: 'Antojo y registros eliminados correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar antojo y registros' });
   }
 };

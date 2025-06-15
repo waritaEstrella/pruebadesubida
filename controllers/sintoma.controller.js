@@ -1,4 +1,4 @@
-import { getSintomas, createSintoma, updateSintoma, deleteSintoma, getSintomasPorUsuarioCreador } from '../models/sintoma.model.js';
+import { getSintomas, createSintoma, updateSintoma, deleteSintoma, getSintomasPorUsuarioCreador, deleteSintomaYRegistros } from '../models/sintoma.model.js';
 
 // Obtener todos los síntomas activos
 export const obtenerSintomas = async (req, res) => {
@@ -76,5 +76,17 @@ export const eliminarSintoma = async (req, res) => {
   } catch (error) {
     console.error('Error al eliminar síntoma:', error.message);
     res.status(500).json({ error: 'Error del servidor al eliminar síntoma' });
+  }
+};
+
+// Eliminar (desactivar) sintoma y registro sintoma
+
+export const eliminarSintomaYRegistros = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await deleteSintomaYRegistros(id);
+    res.status(200).json({ message: 'Síntoma y registros eliminados correctamente' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar síntoma y registros' });
   }
 };
