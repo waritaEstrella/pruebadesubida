@@ -76,23 +76,6 @@ export const eliminarAntojo = async (req, res) => {
   }
 };
 
-export const deleteAntojo = async (idAntojo) => {
-  const query1 = `
-    UPDATE registro_antojo
-    SET estado = false
-    WHERE id_antojo = $1;
-  `;
-
-  const query2 = `
-    UPDATE antojo
-    SET estado = false
-    WHERE id = $1;
-  `;
-
-  await pool.query(query1, [idAntojo]);
-  await pool.query(query2, [idAntojo]);
-};
-
 
 // Eliminar (desactivar) sintoma y registro sintoma
 

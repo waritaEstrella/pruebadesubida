@@ -64,6 +64,6 @@ export const deleteAntojoYRegistros = async (id) => {
   );
 
   await pool.query(
-    'UPDATE ANTOJO SET ESTADO = FALSE, , EDITADO_EN = NOW() WHERE ID = $1', [id]
+    'UPDATE ANTOJO SET ESTADO = FALSE, EDITADO_EN = NOW() WHERE ID = $1', [id]
   );
 }
