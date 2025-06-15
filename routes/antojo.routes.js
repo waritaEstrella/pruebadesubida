@@ -5,6 +5,7 @@ import {
   actualizarAntojo,
   eliminarAntojo,
   obtenerAntojoPorUsuarioCreador,
+  eliminarAntojoYRegistros
 } from '../controllers/antojo.controller.js';
 
 const router = Router();
