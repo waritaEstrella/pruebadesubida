@@ -3,7 +3,8 @@ import {
   getCentrosSalud,
   updateCentroSalud,
   validarCentroSalud,
-  deleteCentroSalud
+  deleteCentroSalud,
+  getCentrosSaludPorMunicipio, // <--- importa esta nueva función
 } from '../models/centrosalud.model.js';
 
 // Obtener centros de salud activos y validados
@@ -93,5 +94,17 @@ export const eliminarCentroSalud = async (req, res) => {
   } catch (error) {
     console.error('Error al eliminar centro de salud:', error.message);
     res.status(500).json({ error: 'Error del servidor al eliminar centro de salud' });
+  }
+};
+
+// Nuevo controlador para centros por municipio
+export const obtenerCentrosPorMunicipio = async (req, res) => {
+  const { municipio } = req.params;
+  try {
+    const centros = await getCentrosSaludPorMunicipio(municipio);
+    res.status(200).json(centros);
+  } catch (error) {
+    console.error('Error al obtener centros por municipio:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener centros' });
   }
 };

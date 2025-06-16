@@ -3,7 +3,7 @@ import {
   obtenerCatalogoVacunas,
   crearCatalogoVacuna,
   actualizarCatalogoVacuna,
-  eliminarCatalogoVacuna
+  eliminarCatalogoVacuna,
 } from '../controllers/catalogovacuna.controller.js';
 
 const router = Router();

@@ -5,16 +5,15 @@ export const createDatoEmbarazo = async ({
   idUsuario,
   fechaUltimaRegla,
   fechaProbableParto,
-  numeroEmbarazo = 1,
-  tratamientoEspecial = false,
+  dias_embarazo,
   idUsuarioCreador
 }) => {
   const res = await pool.query(
     `INSERT INTO dato_embarazo (
-      id_usuario, fecha_ultima_regla, fecha_probable_parto, numero_embarazo, tratamiento_especial, id_usuario_creador
-    ) VALUES ($1, $2, $3, $4, $5, $6)
+      id_usuario, fecha_ultima_regla, fecha_probable_parto, dias_embarazo, id_usuario_creador
+    ) VALUES ($1, $2, $3, $4, $5)
     RETURNING *`,
-    [idUsuario, fechaUltimaRegla, fechaProbableParto, numeroEmbarazo, tratamientoEspecial, idUsuarioCreador]
+    [idUsuario, fechaUltimaRegla, fechaProbableParto, dias_embarazo, idUsuarioCreador]
   );
   return res.rows[0];
 };
@@ -40,21 +39,19 @@ export const getDatosEmbarazoPorUsuario = async (idUsuario) => {
 export const updateDatoEmbarazo = async (id, {
   fechaUltimaRegla,
   fechaProbableParto,
-  numeroEmbarazo,
-  tratamientoEspecial,
+  diasEmbarazo,
   idUsuarioEditor
 }) => {
   const res = await pool.query(
     `UPDATE dato_embarazo
      SET fecha_ultima_regla = $1,
          fecha_probable_parto = $2,
-         numero_embarazo = $3,
-         tratamiento_especial = $4,
-         id_usuario_editor = $5,
+         dias_embarazo = $3,
+         id_usuario_editor = $4,
          editado_en = NOW()
-     WHERE id = $6
+     WHERE id = $5
      RETURNING *`,
-    [fechaUltimaRegla, fechaProbableParto, numeroEmbarazo, tratamientoEspecial, idUsuarioEditor, id]
+    [fechaUltimaRegla, fechaProbableParto, diasEmbarazo, idUsuarioEditor, id]
   );
   return res.rows[0];
 };

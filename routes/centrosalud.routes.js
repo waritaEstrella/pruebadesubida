@@ -4,7 +4,8 @@ import {
   crearCentroSalud,
   actualizarCentroSalud,
   validarCentroSaludController,
-  eliminarCentroSalud
+  eliminarCentroSalud,
+  obtenerCentrosPorMunicipio, // <--- nueva importación
 } from '../controllers/centrosalud.controller.js';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.post('/', crearCentroSalud);
 router.put('/:id', actualizarCentroSalud);
 router.put('/validar/:id', validarCentroSaludController);
 router.delete('/:id', eliminarCentroSalud);
+router.get('/municipio/:municipio', obtenerCentrosPorMunicipio); // <--- nueva ruta
 
 export default router;

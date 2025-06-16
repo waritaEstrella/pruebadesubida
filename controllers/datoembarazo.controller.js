@@ -38,11 +38,10 @@ export const crearDatoEmbarazo = async (req, res) => {
     idUsuario,
     fechaUltimaRegla,
     fechaProbableParto,
-    numeroEmbarazo = 1,
-    tratamientoEspecial = false,
+    diasEmbarazo,
     idUsuarioCreador
   } = req.body;
-  if (!idUsuario || !fechaUltimaRegla || !idUsuarioCreador) {
+  if (!idUsuario || !idUsuarioCreador) {
     return res.status(400).json({ error: 'Faltan datos requeridos' });
   }
   try {
@@ -50,8 +49,7 @@ export const crearDatoEmbarazo = async (req, res) => {
       idUsuario,
       fechaUltimaRegla,
       fechaProbableParto,
-      numeroEmbarazo,
-      tratamientoEspecial,
+      diasEmbarazo,
       idUsuarioCreador
     });
     res.status(201).json(dato);

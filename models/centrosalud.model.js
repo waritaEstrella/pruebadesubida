@@ -68,3 +68,12 @@ export const deleteCentroSalud = async (id) => {
     [id]
   );
 };
+
+//obtener por centro de salud por municipio
+export const getCentrosSaludPorMunicipio = async (municipio) => {
+  const res = await pool.query(
+    'SELECT * FROM centro_salud WHERE estado = TRUE AND validado = TRUE AND municipio = $1',
+    [municipio]
+  );
+  return res.rows;
+};
