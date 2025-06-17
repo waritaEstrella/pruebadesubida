@@ -87,3 +87,52 @@ export const getRegistrosSintomaPorUsuarioYSintoma = async (idUsuario, idSintoma
   );
   return res.rows;
 };
+
+//para las estadisticas
+export const getEstadisticasSintomas = async (idUsuario) => {
+  const res = await pool.query(`
+    WITH sintomas_usuario AS (
+      SELECT 
+        id_sintoma,
+        fecha,
+        duracion_min,
+        COUNT(*) OVER() AS total_sintomas,
+        COUNT(*) OVER(PARTITION BY id_sintoma) AS conteo_por_sintoma,
+        COUNT(*) OVER(PARTITION BY fecha) AS conteo_por_fecha,
+        SUM(duracion_min) OVER (PARTITION BY DATE_PART('week', fecha)) AS duracion_por_semana
+      FROM registro_sintoma
+      WHERE id_usuario = $1 AND estado = TRUE
+    ),
+    sintoma_frecuente AS (
+      SELECT id_sintoma, COUNT(*) AS cantidad
+      FROM registro_sintoma
+      WHERE id_usuario = $1 AND estado = TRUE
+      GROUP BY id_sintoma
+      ORDER BY cantidad DESC
+      LIMIT 1
+    ),
+    dia_maximo AS (
+      SELECT fecha, COUNT(*) AS cantidad
+      FROM registro_sintoma
+      WHERE id_usuario = $1 AND estado = TRUE
+      GROUP BY fecha
+      ORDER BY cantidad DESC
+      LIMIT 1
+    ),
+    promedio AS (
+      SELECT ROUND(COUNT(*)::numeric / COUNT(DISTINCT DATE_PART('week', fecha)), 2) AS promedio
+      FROM registro_sintoma
+      WHERE id_usuario = $1 AND estado = TRUE
+    )
+    SELECT 
+      (SELECT COUNT(*) FROM registro_sintoma WHERE id_usuario = $1 AND estado = TRUE) AS total_sintomas,
+      (SELECT s.nombre_sintoma FROM sintoma s WHERE s.id = sf.id_sintoma) AS sintoma_frecuente,
+      (SELECT fecha FROM dia_maximo) AS dia_maximo,
+      (SELECT SUM(duracion_min) FROM registro_sintoma WHERE id_usuario = $1 AND estado = TRUE AND DATE_PART('week', fecha) = DATE_PART('week', CURRENT_DATE)) AS duracion_semanal,
+      (SELECT promedio FROM promedio) AS promedio_semanal
+    FROM sintoma_frecuente sf
+    LIMIT 1;
+  `, [idUsuario]);
+
+  return res.rows[0];
+};

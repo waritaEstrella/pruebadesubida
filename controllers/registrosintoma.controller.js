@@ -4,7 +4,8 @@ import {
   getRegistrosSintomaPorUsuario,
   updateRegistroSintoma,
   deleteRegistroSintoma,
-  getRegistrosSintomaPorUsuarioYSintoma
+  getRegistrosSintomaPorUsuarioYSintoma,
+  getEstadisticasSintomas
 } from '../models/registrosintoma.model.js';
 import { getRegistrosSintomaPorUsuarioYFecha } from '../models/registrosintoma.model.js';
 
@@ -122,3 +123,17 @@ export const obtenerRegistrosSintomaPorUsuarioYSintoma = async (req, res) => {
   }
 };
 
+//obtener estadisticas
+export const obtenerEstadisticasSintomas = async (req, res) => {
+  const { idUsuario } = req.params;
+  if (!idUsuario) {
+    return res.status(400).json({ error: 'Falta el idUsuario' });
+  }
+  try {
+    const estadisticas = await getEstadisticasSintomas(idUsuario);
+    res.status(200).json(estadisticas);
+  } catch (error) {
+    console.error('Error al obtener estadísticas de síntomas:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener estadísticas' });
+  }
+};
