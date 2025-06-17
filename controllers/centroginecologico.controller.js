@@ -22,7 +22,7 @@ export const obtenerCentrosGinecologicos = async (req, res) => {
 export const obtenerCentrosGinecologicosNoValidadosPorUsuario = async (req, res) => {
   const {idUsuarioCreador} = req.params;
   try {
-    const centros = await getCentrosGinecologicosNoValidadosPorUsuario({idUsuarioCreador});
+    const centros = await getCentrosGinecologicosNoValidadosPorUsuario(idUsuarioCreador);
     res.status(200).json(centros);
   } catch (error) {
     console.error('Error al obtener centros ginecologicos no validados por usuario', error.message);
