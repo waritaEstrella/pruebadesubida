@@ -29,7 +29,7 @@ export const getCentrosGinecologicos = async () => {
 };
 
 //Obtener todos los centros ginecologicos creados por el usuario x sin ser validados
-export const getCentrosGinecologicosNoValidadosPorUsuario = async ({idUsuarioCreador}) => {
+export const getCentrosGinecologicosNoValidadosPorUsuario = async (idUsuarioCreador) => {
   const res = await pool.query(
     `SELECT * FROM centro_ginecologico WHERE estado = TRUE AND id_usuario_creador = $1`, [idUsuarioCreador]
   );
