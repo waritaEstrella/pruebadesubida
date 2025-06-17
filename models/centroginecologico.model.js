@@ -28,6 +28,8 @@ export const getCentrosGinecologicos = async () => {
   return res.rows;
 };
 
+
+
 // Actualizar centro ginecológico
 export const updateCentroGinecologico = async (id, {
   nombreConsultorio,
