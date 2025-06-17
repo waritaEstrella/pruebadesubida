@@ -140,7 +140,6 @@ export const obtenerEstadisticasSintomas = async (req, res) => {
 };
 
 //CALENDARIO POR DIA
-import { getSintomasPorDia } from '../models/registrosintoma.model.js';
 
 export const obtenerSintomasPorDia = async (req, res) => {
   const { idUsuario } = req.params;
