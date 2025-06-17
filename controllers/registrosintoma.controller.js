@@ -5,7 +5,8 @@ import {
   updateRegistroSintoma,
   deleteRegistroSintoma,
   getRegistrosSintomaPorUsuarioYSintoma,
-  getEstadisticasSintomas
+  getEstadisticasSintomas,
+  getSintomasPorDia
 } from '../models/registrosintoma.model.js';
 import { getRegistrosSintomaPorUsuarioYFecha } from '../models/registrosintoma.model.js';
 

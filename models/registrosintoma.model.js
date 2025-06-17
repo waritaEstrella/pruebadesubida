@@ -151,4 +151,3 @@ export const getSintomasPorDia = async (idUsuario) => {
 
   return res.rows;
 };
-
