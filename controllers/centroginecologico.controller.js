@@ -20,10 +20,7 @@ export const obtenerCentrosGinecologicos = async (req, res) => {
 
 //Obtener centro ginecologico activos, no validados y por usuarui
 export const obtenerCentrosGinecologicosNoValidadosPorUsuario = async (req, res) => {
-  const {idUsuarioCreador} = req.body;
-  if (!idUsuarioCreador){
-    return res.status(400).json({ error: 'Faltan datos requeridos'});
-  }
+  const {idUsuarioCreador} = req.params;
   try {
     const centros = await getCentrosGinecologicosNoValidadosPorUsuario({idUsuarioCreador});
     res.status(200).json(centros);
