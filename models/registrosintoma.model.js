@@ -136,3 +136,19 @@ export const getEstadisticasSintomas = async (idUsuario) => {
 
   return res.rows[0];
 };
+
+//PARA EL CALENDARIO POR DIA
+export const getSintomasPorDia = async (idUsuario) => {
+  const res = await pool.query(`
+    SELECT 
+      fecha,
+      COUNT(*) AS cantidad
+    FROM registro_sintoma
+    WHERE id_usuario = $1 AND estado = TRUE
+    GROUP BY fecha
+    ORDER BY fecha ASC
+  `, [idUsuario]);
+
+  return res.rows;
+};
+

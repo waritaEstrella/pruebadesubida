@@ -22,5 +22,8 @@ router.get('/usuario/:idUsuario/sintoma/:idSintoma', obtenerRegistrosSintomaPorU
 
 //estadisticas
 router.get('/sintomas/estadisticas/:idUsuario', obtenerEstadisticasSintomas);
+//calendario
+router.get('/sintomas/por-dia/:idUsuario', obtenerSintomasPorDia);
+
 
 export default router;
