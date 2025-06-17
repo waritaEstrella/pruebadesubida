@@ -3,7 +3,8 @@ import {
   getCentrosGinecologicos,
   updateCentroGinecologico,
   validarCentroGinecologico,
-  deleteCentroGinecologico
+  deleteCentroGinecologico,
+  getCentrosGinecologicosNoValidadosPorUsuario
 } from '../models/centroginecologico.model.js';
 
 // Obtener todos los centros ginecológicos validados y activos
@@ -16,6 +17,21 @@ export const obtenerCentrosGinecologicos = async (req, res) => {
     res.status(500).json({ error: 'Error del servidor al obtener centros ginecológicos' });
   }
 };
+
+//Obtener centro ginecologico activos, no validados y por usuarui
+export const obtenerCentrosGinecologicosNoValidadosPorUsuario = async (req, res) => {
+  const {idUsuarioCreador} = req.body;
+  if (!idUsuarioCreador){
+    return res.status(400).json({ error: 'Faltan datos requeridos'});
+  }
+  try {
+    const centros = await getCentrosGinecologicosNoValidadosPorUsuario({idUsuarioCreador});
+    res.status(200).json(centros);
+  } catch (error) {
+    console.error('Error al obtener centros ginecologicos no validados por usuario', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener centros ginecologicos no validados por usuario'});
+  }
+}
 
 // Crear centro ginecológico
 export const crearCentroGinecologico = async (req, res) => {

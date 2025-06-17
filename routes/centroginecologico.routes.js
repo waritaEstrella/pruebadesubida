@@ -4,7 +4,8 @@ import {
   crearCentroGinecologico,
   actualizarCentroGinecologico,
   validarCentroGinecologicoController,
-  eliminarCentroGinecologico
+  eliminarCentroGinecologico,
+  obtenerCentrosGinecologicosNoValidadosPorUsuario
 } from '../controllers/centroginecologico.controller.js';
 
 const router = Router();
@@ -14,5 +15,6 @@ router.post('/', crearCentroGinecologico);
 router.put('/:id', actualizarCentroGinecologico);
 router.put('/validar/:id', validarCentroGinecologicoController);
 router.delete('/:id', eliminarCentroGinecologico);
+router.get('/no_validados/:idUsuario', obtenerCentrosGinecologicosNoValidadosPorUsuario);
 
 export default router;
