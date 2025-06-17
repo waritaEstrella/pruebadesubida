@@ -108,3 +108,4 @@ export const obtenerCentrosPorMunicipio = async (req, res) => {
     res.status(500).json({ error: 'Error del servidor al obtener centros' });
   }
 };
+
