@@ -7,7 +7,8 @@ import {
   eliminarRegistroSintoma,
   obtenerRegistrosSintomaPorUsuarioYFecha,
   obtenerRegistrosSintomaPorUsuarioYSintoma,
-  obtenerEstadisticasSintomas
+  obtenerEstadisticasSintomas,
+  obtenerSintomasPorDia
 } from '../controllers/registrosintoma.controller.js';
 
 const router = Router();
