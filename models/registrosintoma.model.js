@@ -151,3 +151,18 @@ export const getSintomasPorDia = async (idUsuario) => {
 
   return res.rows;
 };
+
+//para las graficas
+export const getTopSintomasFrecuentes = async (idUsuario) => {
+  const res = await pool.query(`
+    SELECT s.nombre_sintoma, COUNT(rs.id_sintoma) AS cantidad
+    FROM registro_sintoma rs
+    JOIN sintoma s ON s.id = rs.id_sintoma
+    WHERE rs.id_usuario = $1 AND rs.estado = TRUE
+    GROUP BY s.nombre_sintoma
+    ORDER BY cantidad DESC
+    LIMIT 5
+  `, [idUsuario]);
+
+  return res.rows;
+};

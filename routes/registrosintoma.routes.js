@@ -8,7 +8,8 @@ import {
   obtenerRegistrosSintomaPorUsuarioYFecha,
   obtenerRegistrosSintomaPorUsuarioYSintoma,
   obtenerEstadisticasSintomas,
-  obtenerSintomasPorDia
+  obtenerSintomasPorDia,
+  obtenerTopSintomasFrecuentes
 } from '../controllers/registrosintoma.controller.js';
 
 const router = Router();
@@ -25,6 +26,9 @@ router.get('/usuario/:idUsuario/sintoma/:idSintoma', obtenerRegistrosSintomaPorU
 router.get('/sintomas/estadisticas/:idUsuario', obtenerEstadisticasSintomas);
 //calendario
 router.get('/sintomas/por-dia/:idUsuario', obtenerSintomasPorDia);
+//graficas
+router.get('/top/:idUsuario', obtenerTopSintomasFrecuentes);
+
 
 
 export default router;
