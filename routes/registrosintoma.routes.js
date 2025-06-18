@@ -27,7 +27,8 @@ router.get('/sintomas/estadisticas/:idUsuario', obtenerEstadisticasSintomas);
 //calendario
 router.get('/sintomas/por-dia/:idUsuario', obtenerSintomasPorDia);
 //graficas
-router.get('/top-frecuentes/:idUsuario', obtenerTopSintomasFrecuentes);
+router.get('/sintomas/top-frecuentes/:idUsuario', obtenerTopSintomasFrecuentes);
+
 
 
 
