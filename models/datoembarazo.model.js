@@ -1,24 +1,34 @@
 import { pool } from '../config/db.js';
 
-// Crear dato de embarazo
+// Crear un nuevo dato de embarazo
 export const createDatoEmbarazo = async ({
-  idUsuario,
-  fechaUltimaRegla,
-  fechaProbableParto,
+  id_usuario,
+  fecha_ultima_regla,
+  fecha_probable_parto,
   dias_embarazo,
-  idUsuarioCreador
+  id_usuario_creador
 }) => {
   const res = await pool.query(
     `INSERT INTO dato_embarazo (
-      id_usuario, fecha_ultima_regla, fecha_probable_parto, dias_embarazo, id_usuario_creador
+      id_usuario,
+      fecha_ultima_regla,
+      fecha_probable_parto,
+      dias_embarazo,
+      id_usuario_creador
     ) VALUES ($1, $2, $3, $4, $5)
     RETURNING *`,
-    [idUsuario, fechaUltimaRegla, fechaProbableParto, dias_embarazo, idUsuarioCreador]
+    [
+      id_usuario,
+      fecha_ultima_regla,
+      fecha_probable_parto,
+      dias_embarazo,
+      id_usuario_creador
+    ]
   );
   return res.rows[0];
 };
 
-// Obtener datos de embarazo activos
+// Obtener todos los embarazos activos
 export const getDatosEmbarazo = async () => {
   const res = await pool.query(
     'SELECT * FROM dato_embarazo WHERE estado = TRUE'
@@ -26,22 +36,25 @@ export const getDatosEmbarazo = async () => {
   return res.rows;
 };
 
-// Obtener datos de embarazo por usuaria
-export const getDatosEmbarazoPorUsuario = async (idUsuario) => {
+// Obtener embarazos activos por usuaria
+export const getDatosEmbarazoPorUsuario = async (id_usuario) => {
   const res = await pool.query(
     'SELECT * FROM dato_embarazo WHERE id_usuario = $1 AND estado = TRUE',
-    [idUsuario]
+    [id_usuario]
   );
   return res.rows;
 };
 
-// Actualizar dato de embarazo
-export const updateDatoEmbarazo = async (id, {
-  fechaUltimaRegla,
-  fechaProbableParto,
-  diasEmbarazo,
-  idUsuarioEditor
-}) => {
+// Actualizar un dato de embarazo existente
+export const updateDatoEmbarazo = async (
+  id,
+  {
+    fecha_ultima_regla,
+    fecha_probable_parto,
+    dias_embarazo,
+    id_usuario_editor
+  }
+) => {
   const res = await pool.query(
     `UPDATE dato_embarazo
      SET fecha_ultima_regla = $1,
@@ -51,12 +64,18 @@ export const updateDatoEmbarazo = async (id, {
          editado_en = NOW()
      WHERE id = $5
      RETURNING *`,
-    [fechaUltimaRegla, fechaProbableParto, diasEmbarazo, idUsuarioEditor, id]
+    [
+      fecha_ultima_regla,
+      fecha_probable_parto,
+      dias_embarazo,
+      id_usuario_editor,
+      id
+    ]
   );
   return res.rows[0];
 };
 
-// Eliminar (desactivar) dato de embarazo
+// Eliminar (desactivar) un embarazo (soft delete)
 export const deleteDatoEmbarazo = async (id) => {
   await pool.query(
     'UPDATE dato_embarazo SET estado = FALSE WHERE id = $1',
