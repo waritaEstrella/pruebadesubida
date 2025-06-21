@@ -61,7 +61,7 @@ app.use('/api/centrosalud', centrosaludRoutes);
 app.use('/api/centroginecologico', centroginecologicoRoutes);
 app.use('/api/medico', medicoRoutes);
 app.use('/api/controlprenatal', controlprenatalRoutes);
-app.use('/api/datoembarazo', datoembarazoRoutes);
+app.use('/api/embarazo', datoembarazoRoutes);
 app.use('/api/hijo', hijoRoutes);
 app.use('/api/controlpostnatal', controlpostnatalRoutes);
 app.use('/api/controlagendado', controlagendadoRoutes);
