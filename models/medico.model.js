@@ -28,6 +28,15 @@ export const getMedicos = async () => {
   return res.rows;
 };
 
+//Obtener medicos activos por usuario creador
+export const getMedicosPorUsuarioCreador = async (idUsuarioCreador) => {
+  const res = await pool.query(
+    'SELECT * FROM medico WHERE id_usuario_creador = $1 AND estado = TRUE',
+    [idUsuarioCreador]
+  );
+  return res.rows;
+};
+
 // Actualizar médico
 export const updateMedico = async (id, {
   centroMedico,

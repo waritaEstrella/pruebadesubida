@@ -2,7 +2,8 @@ import {
   createMedico,
   getMedicos,
   updateMedico,
-  deleteMedico
+  deleteMedico,
+  getMedicosPorUsuarioCreador
 } from '../models/medico.model.js';
 
 // Obtener médicos activos
@@ -13,6 +14,21 @@ export const obtenerMedicos = async (req, res) => {
   } catch (error) {
     console.error('Error al obtener médicos:', error.message);
     res.status(500).json({ error: 'Error del servidor al obtener médicos' });
+  }
+};
+
+//Obtener medicos por usuario
+export const obtenerMedicoPorUsuarioCreador = async (req, res) => {
+  const { idUsuarioCreador } = req.params;
+  if (!idUsuarioCreador) {
+    return res.status(400).json({ error: 'Falta el idUsuarioCreador' });
+  }
+  try {
+    const medicos = await getMedicosPorUsuarioCreador(idUsuarioCreador);
+    res.status(200).json(medicos);
+  } catch (error) {
+    console.error('Error al obtener medicos por usuario creador:', error.message);
+    res.status(500).json({ error: 'Error del servidor al obtener medicos por usuario creador' });
   }
 };
 
