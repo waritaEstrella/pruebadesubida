@@ -10,7 +10,7 @@ import {
 const router = Router();
 
 router.get('/', obtenerMedicos);
-router.get('/usuario/:idUsuario', obtenerMedicoPorUsuarioCreador);
+router.get('/usuario/:idUsuarioCreador', obtenerMedicoPorUsuarioCreador);
 router.post('/', crearMedico);
 router.put('/:id', actualizarMedico);
 router.delete('/:id', eliminarMedico);
