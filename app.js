@@ -39,10 +39,10 @@ dotenv.config();
 const app = express();
 
 // 🔐 Seguridad HTTP
-app.disable('x-powered-by'); // Elimina encabezado que expone Express
-app.use(helmet()); // Aplica encabezados básicos
+app.disable('x-powered-by');
+app.use(helmet());
 
-// Política de Seguridad de Contenidos (CSP)
+// ✅ Política de Seguridad de Contenidos (CSP) mejorada
 app.use(
   helmet.contentSecurityPolicy({
     useDefaults: true,
@@ -53,15 +53,24 @@ app.use(
       fontSrc: ["'self'", 'fonts.gstatic.com'],
       imgSrc: ["'self'", 'data:', 'blob:'],
       connectSrc: ["'self'", 'https://api.cloudinary.com'],
+      formAction: ["'self'"],               // 🛡️ Protección contra inyecciones en formularios
+      frameAncestors: ["'none'"],          // 🛡️ Protección contra clickjacking
+      objectSrc: ["'none'"],
     },
   })
 );
 
-// Strict-Transport-Security (HSTS) solo si estás en producción y usas HTTPS
+// ✅ Cache-Control seguro para evitar almacenamiento en navegador/proxies
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  next();
+});
+
+// 🔒 HSTS en producción
 if (process.env.NODE_ENV === 'production') {
   app.use(
     helmet.hsts({
-      maxAge: 63072000, // 2 años
+      maxAge: 63072000,
       includeSubDomains: true,
       preload: true,
     })
@@ -71,7 +80,7 @@ if (process.env.NODE_ENV === 'production') {
 // ✅ CORS restringido
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://pruebadesubida.onrender.com' // cambia por tu dominio real
+  'https://pruebadesubida.onrender.com'
 ];
 
 app.use(cors({
@@ -87,7 +96,7 @@ app.use(cors({
   credentials: true,
 }));
 
-// Middleware para parsear JSON y formularios
+// Middleware de cuerpo de solicitud
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 
