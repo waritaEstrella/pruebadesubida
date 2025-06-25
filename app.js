@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
 
 // Importar rutas
 import authRoutes from './routes/auth.routes.js';
@@ -33,20 +34,60 @@ import imagenessubguiaRoutes from './routes/imagenessubguia.routes.js';
 import antojoRoutes from './routes/antojo.routes.js';
 import registroAntojoRoutes from './routes/registroantojo.routes.js';
 
-
-
 dotenv.config();
 
 const app = express();
 
-// Configuración de CORS
+// 🔐 Seguridad HTTP
+app.disable('x-powered-by'); // Elimina encabezado que expone Express
+app.use(helmet()); // Aplica encabezados básicos
+
+// Política de Seguridad de Contenidos (CSP)
+app.use(
+  helmet.contentSecurityPolicy({
+    useDefaults: true,
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'fonts.googleapis.com'],
+      fontSrc: ["'self'", 'fonts.gstatic.com'],
+      imgSrc: ["'self'", 'data:', 'blob:'],
+      connectSrc: ["'self'", 'https://api.cloudinary.com'],
+    },
+  })
+);
+
+// Strict-Transport-Security (HSTS) solo si estás en producción y usas HTTPS
+if (process.env.NODE_ENV === 'production') {
+  app.use(
+    helmet.hsts({
+      maxAge: 63072000, // 2 años
+      includeSubDomains: true,
+      preload: true,
+    })
+  );
+}
+
+// ✅ CORS restringido
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://pruebadesubida.onrender.com' // cambia por tu dominio real
+];
+
 app.use(cors({
-  origin: '*', // ⚠️ En producción, usa tu dominio real
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Origen no permitido por CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 
-// Middleware para parsear JSON (con límite ampliado) y formularios
+// Middleware para parsear JSON y formularios
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false }));
 
@@ -80,7 +121,6 @@ app.use('/api/subguia', subguiaRoutes);
 app.use('/api/imagenessubguia', imagenessubguiaRoutes);
 app.use('/api/antojo', antojoRoutes);
 app.use('/api/registroantojo', registroAntojoRoutes);
-
 
 // Ruta de prueba
 app.get('/', (req, res) => {
